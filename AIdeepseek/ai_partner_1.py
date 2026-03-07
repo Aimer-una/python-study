@@ -51,10 +51,20 @@ if prompt: # prompt不为空 则调用AI大模型
             # 实现会话记忆
             *st.session_state.messages,
         ],
-        stream=False
+        stream=True
     )
-    print("<---------- AI大模型返回结果:",response.choices[0].message.content)
-    # 显示结果
-    st.chat_message("assistant").write(response.choices[0].message.content)
+    # print("<---------- AI大模型返回结果:",response.choices[0].message.content)
+    # 显示结果(非流式输出的解析方式)
+    # st.chat_message("assistant").write(response.choices[0].message.content)
+
+    # 显示大模型返回结果（流式输出的解析方式）
+    response_message = st.empty() # 创建一个空的组件，用于展示大模型返回的结果
+    full_response = ""
+    for chunk in response:
+        if chunk.choices[0].delta.content is not None:
+            full_response += chunk.choices[0].delta.content
+            response_message.chat_message(full_response).write(full_response)
+
+
     # 保存AI大模型返回的结果
-    st.session_state.messages.append({"role": "assistant", "content": response.choices[0].message.content})
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
