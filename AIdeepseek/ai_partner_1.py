@@ -48,7 +48,8 @@ if prompt: # prompt不为空 则调用AI大模型
         model="deepseek-chat",
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
+            # 实现会话记忆
+            *st.session_state.messages,
         ],
         stream=False
     )
