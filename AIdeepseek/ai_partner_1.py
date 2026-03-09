@@ -1,6 +1,11 @@
+import json
 import streamlit as st
 import os
 from openai import OpenAI
+from datetime import datetime
+
+from streamlit import session_state
+
 st.set_page_config(
     page_title="AI智能伴侣",
     page_icon=":robot_face:",
@@ -10,6 +15,24 @@ st.set_page_config(
     initial_sidebar_state="auto",
     menu_items={}
 )
+
+# 保存会话
+def save_session():
+    if st.session_state.current_session:
+        # 构建新的会话对象
+        session_data = {
+            "nick_name": st.session_state.nick_name,
+            "nature": st.session_state.nature,
+            "current_session": st.session_state.current_session,
+            "messages": st.session_state.messages
+        }
+        # 如果当前session目录不存在，则创建
+        if not os.path.exists("sessions"):
+            os.mkdir("sessions")
+
+        # 保存会话数据
+        with open(f"sessions/{st.session_state.current_session}.json", "w", encoding="utf-8") as f:
+            json.dump(session_data, f, ensure_ascii=False, indent=2)
 
 st.title("AI智能伴侣")
 
@@ -45,6 +68,10 @@ if "nick_name" not in st.session_state:
 if "nature" not in st.session_state:
     st.session_state.nature = "你很可爱"
 
+# 会话标识
+if "current_session" not in st.session_state:
+    st.session_state.current_session = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
 # 展示聊天消息
 for message in st.session_state.messages:
     st.chat_message(message["role"]).write(message["content"])
@@ -57,7 +84,16 @@ client = OpenAI(
 
 # 左侧侧边栏
 with st.sidebar:
+    st.subheader("AI控制面板")
+
+    # 新建会话
+    if st.button("新建会话",width="stretch",icon="🧣"):
+        # 1.保存当前会话
+        save_session()
+
+    # 伴侣信息
     st.subheader("伴侣信息")
+
     # 昵称输入框
     nick_name = st.text_input("昵称", placeholder="请输入伴侣昵称", value=st.session_state.nick_name)
     if nick_name:
