@@ -19,6 +19,17 @@ st.set_page_config(
 def new_session_name():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
+# 加载所有会话信息
+def load_sessions():
+    session_list = []
+    # 加载session下的所有信息
+    if os.path.exists("sessions"):
+        file_list = os.listdir("sessions")
+        for filename in file_list:
+           if filename.endswith(".json"):
+               session_list.append(filename[:-5])
+    return session_list
+
 # 保存会话
 def save_session():
     if st.session_state.current_session:
@@ -100,6 +111,20 @@ with st.sidebar:
             st.session_state.current_session = new_session_name()
             save_session()
             st.rerun() # 重新运行当前页面
+
+    # 历史会话
+    st.text("历史会话")
+    session_list = load_sessions()
+    for session in session_list:
+        col1,col2 = st.columns([4,1])
+        with col1:
+            # 加载会话信息
+            if st.button(session,width="stretch",key=f"load_{session}",icon="🥰"):
+                pass
+        with col2:
+            if st.button("",width="stretch",key=f"delete_{session}",icon="💔"):
+                pass
+
     # 伴侣信息
     st.subheader("伴侣信息")
 
