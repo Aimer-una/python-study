@@ -16,6 +16,9 @@ st.set_page_config(
     menu_items={}
 )
 
+def new_session_name():
+    return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
 # 保存会话
 def save_session():
     if st.session_state.current_session:
@@ -70,7 +73,7 @@ if "nature" not in st.session_state:
 
 # 会话标识
 if "current_session" not in st.session_state:
-    st.session_state.current_session = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    st.session_state.current_session = new_session_name()
 
 # 展示聊天消息
 for message in st.session_state.messages:
@@ -91,6 +94,12 @@ with st.sidebar:
         # 1.保存当前会话
         save_session()
 
+        # 创建新的会话
+        if st.session_state.messages:
+            st.session_state.messages = []
+            st.session_state.current_session = new_session_name()
+            save_session()
+            st.rerun() # 重新运行当前页面
     # 伴侣信息
     st.subheader("伴侣信息")
 
