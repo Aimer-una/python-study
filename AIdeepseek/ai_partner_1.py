@@ -16,6 +16,21 @@ st.set_page_config(
     menu_items={}
 )
 
+# 加载指定会话信息
+def load_session(session_name):
+    # 读取文件
+    try:
+        if os.path.exists(f"sessions/{session_name}.json"):
+            with open(f"sessions/{session_name}.json", "r", encoding="utf-8") as f:
+                session_data = json.load(f)
+                st.session_state.nick_name = session_data["nick_name"]
+                st.session_state.nature = session_data["nature"]
+                st.session_state.current_session = session_name
+                st.session_state.messages = session_data["messages"]
+    except Exception:
+        st.error("无法加载会话信息")
+
+
 def new_session_name():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -47,6 +62,18 @@ def save_session():
         # 保存会话数据
         with open(f"sessions/{st.session_state.current_session}.json", "w", encoding="utf-8") as f:
             json.dump(session_data, f, ensure_ascii=False, indent=2)
+
+def delete_session(session_name):
+    try:
+        if os.path.exists(f"sessions/{session_name}.json"):
+            os.remove(f"sessions/{session_name}.json")
+            # 如果删除的是当前会话则创建一个新的空的会话
+            if session == st.session_state.current_session:
+                st.session_state.messages = []
+                st.session_state.current_session = new_session_name()
+    except Exception:
+        st.error("删除会话失败")
+
 
 st.title("AI智能伴侣")
 
@@ -87,6 +114,7 @@ if "current_session" not in st.session_state:
     st.session_state.current_session = new_session_name()
 
 # 展示聊天消息
+st.text(f"会话名称:{st.session_state.current_session}")
 for message in st.session_state.messages:
     st.chat_message(message["role"]).write(message["content"])
 
@@ -119,11 +147,15 @@ with st.sidebar:
         col1,col2 = st.columns([4,1])
         with col1:
             # 加载会话信息
-            if st.button(session,width="stretch",key=f"load_{session}",icon="🥰"):
-                pass
+            if st.button(session,width="stretch",key=f"load_{session}",icon="🥰",type="primary" if session == st.session_state.current_session else "secondary"):
+                load_session(session)
+                st.rerun()
         with col2:
             if st.button("",width="stretch",key=f"delete_{session}",icon="💔"):
-                pass
+                delete_session(session)
+                st.rerun()
+
+
 
     # 伴侣信息
     st.subheader("伴侣信息")
@@ -173,3 +205,4 @@ if prompt: # prompt不为空 则调用AI大模型
 
     # 保存AI大模型返回的结果
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+    save_session()
