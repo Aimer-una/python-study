@@ -16,6 +16,21 @@ st.set_page_config(
     menu_items={}
 )
 
+# 加载指定会话信息
+def load_session(session_name):
+    # 读取文件
+    try:
+        if os.path.exists(f"sessions/{session_name}.json"):
+            with open(f"sessions/{session_name}.json", "r", encoding="utf-8") as f:
+                session_data = json.load(f)
+                st.session_state.nick_name = session_data["nick_name"]
+                st.session_state.nature = session_data["nature"]
+                st.session_state.current_session = session_name
+                st.session_state.messages = session_data["messages"]
+    except Exception:
+        st.error("无法加载会话信息")
+
+
 def new_session_name():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -120,7 +135,8 @@ with st.sidebar:
         with col1:
             # 加载会话信息
             if st.button(session,width="stretch",key=f"load_{session}",icon="🥰"):
-                pass
+                load_session(session)
+                st.rerun()
         with col2:
             if st.button("",width="stretch",key=f"delete_{session}",icon="💔"):
                 pass
