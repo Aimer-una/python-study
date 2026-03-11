@@ -1,0 +1,10 @@
+import requests
+
+# 定义url
+target_url ="https://www.tiobe.com/tiobe-index/"
+
+# 发送get请求
+response = requests.get(target_url)
+
+# 输出数据到控制台
+print(response.text)
