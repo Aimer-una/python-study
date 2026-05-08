@@ -1,0 +1,19 @@
+class Solution:
+    def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
+        dummy = ListNode(0)
+        dummy.next = head
+        for _ in range(left-1):
+            dummy = dummy.next
+        p0 = dummy
+        pre = None
+        cur = p0.next
+        for _ in range(right - left + 1):
+            nxt = cur.next
+            cur.next = pre
+            pre = cur
+            cur = nxt
+
+        p0.next.next = cur
+        p0.next = pre
+
+        return dummy.next
