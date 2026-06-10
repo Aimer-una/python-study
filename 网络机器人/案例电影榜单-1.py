@@ -7,7 +7,7 @@ BASE_URL = 'https://ssr1.scrape.center'
 MOVIE_FILE_URL = "csv_data/movies.csv"
 Page_BASE_URL = "https://ssr1.scrape.center/page/"
 
-# 获取电影详情
+# 获取电影上线年份
 def get_movie_year(movie_dates):
     movie_dates = movie_dates[0].strip() if movie_dates else ''
     result = re.search(r"^\d{4}", movie_dates)
@@ -16,13 +16,13 @@ def get_movie_year(movie_dates):
     else:
         return ''
 
-
+# 获取电影上映时间
 def get_movie_datas(movie_dates):
     movie_dates = movie_dates[0].strip() if movie_dates else ''
     movie_dates = movie_dates.replace("上映","")
     return movie_dates
 
-
+# 获取电影详情数据
 def get_movie_info(movie_url):
     print(f"发送请求{movie_url},获取电影详情数据...")
     movie_response = requests.get(movie_url,timeout=10)
@@ -55,7 +55,7 @@ def get_movie_info(movie_url):
     return movie_info
 
 
-
+# 保存所有电影数据
 def save_all_movies(all_movies):
     with open(MOVIE_FILE_URL,"w",encoding="utf-8",newline="") as f:
         writer = csv.DictWriter(f, fieldnames=["名称", "类型", "上映年份","上映时间","评分", "地区", "时长", "简介"])
