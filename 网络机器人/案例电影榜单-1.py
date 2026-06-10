@@ -1,12 +1,28 @@
 import requests
 from lxml import html
 import csv
+import re
 # 常量
 BASE_URL = 'https://ssr1.scrape.center'
 MOVIE_FILE_URL = "csv_data/movies.csv"
 Page_BASE_URL = "https://ssr1.scrape.center/page/"
 
 # 获取电影详情
+def get_movie_year(movie_dates):
+    movie_dates = movie_dates[0].strip() if movie_dates else ''
+    result = re.search(r"^\d{4}", movie_dates)
+    if result:
+        return result.group()  # 这里已经是字符串了，直接返回即可！
+    else:
+        return ''
+
+
+def get_movie_datas(movie_dates):
+    movie_dates = movie_dates[0].strip() if movie_dates else ''
+    movie_dates = movie_dates.replace("上映","")
+    return movie_dates
+
+
 def get_movie_info(movie_url):
     print(f"发送请求{movie_url},获取电影详情数据...")
     movie_response = requests.get(movie_url,timeout=10)
@@ -29,7 +45,8 @@ def get_movie_info(movie_url):
     movie_info = {
         "名称": movie_names[0].strip() if movie_names else '',
         "类型": ",".join(movie_types) if movie_types else '',
-        "上映时间": movie_dates[0].strip() if movie_dates else '',
+        "上映年份":get_movie_year(movie_dates),
+        "上映时间": get_movie_datas(movie_dates),
         "评分": movie_scores[0].strip() if movie_scores else '',
         "地区": ",".join(movie_areas) if movie_areas else '',
         "时长": movie_times[0].strip() if movie_times else '',
@@ -41,7 +58,7 @@ def get_movie_info(movie_url):
 
 def save_all_movies(all_movies):
     with open(MOVIE_FILE_URL,"w",encoding="utf-8",newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["名称", "类型", "上映时间", "评分", "地区", "时长", "简介"])
+        writer = csv.DictWriter(f, fieldnames=["名称", "类型", "上映年份","上映时间","评分", "地区", "时长", "简介"])
         # 写入表头
         writer.writeheader()
         # 写入数据
@@ -54,7 +71,7 @@ def main():
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
     }
-    for page_num in range(1,5):
+    for page_num in range(1,2):
         if page_num == 1:
             url = BASE_URL
         else:
