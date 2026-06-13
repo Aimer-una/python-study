@@ -1,3 +1,6 @@
+"""
+注意：python中没有真正的封装，但是通过__来实现的，但是这并不是绝对的，python中的__只是起到了一个命名的混淆作用，
+"""
 class Person:
     def __init__(self, name, age,phone):
         self.name = name
