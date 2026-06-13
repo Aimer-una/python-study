@@ -17,6 +17,12 @@ class Person:
     def __study(self):
         print(f"{self.name} is studying,hers phone is {self.__phone}")
 
+class Robot:
+    def __init__(self,company):  
+        self.company = company
+
+    def run(self):
+        print(f"{self.company} is running")
 if __name__ == "__main__":
     p = Person("张润", 18, "12345678901")
     p.run()
