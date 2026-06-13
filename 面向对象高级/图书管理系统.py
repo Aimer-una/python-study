@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 class Book:
     def __init__(self, book_id, title, author,total_num):
         self.book_id = book_id
@@ -24,7 +25,7 @@ class Book:
 
 
 
-class Member:
+class Member(ABC):
     def __init__(self, member_id, name, password):
         self.member_id = member_id
         self.name = name
@@ -64,6 +65,7 @@ class Member:
         return self.__borrowed_books
      
     # 获取最大借阅数量(该方法由子类重写)
+    @abstractmethod
     def get_max_books(self) -> int:
         pass
     
