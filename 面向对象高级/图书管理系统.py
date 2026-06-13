@@ -23,6 +23,7 @@ class Book:
         return self.__available_num
 
 
+
 class Member:
     def __init__(self, member_id, name, password):
         self.member_id = member_id
@@ -81,3 +82,4 @@ class VipMember(Member):
 
     def get_max_books(self) -> int:
         return 6 + self.vip_level
+
