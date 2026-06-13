@@ -17,6 +17,9 @@ class Person:
     def __study(self):
         print(f"{self.name} is studying,hers phone is {self.__phone}")
 
+    def action(self):
+        print(f"{self.name} is action")
+
 class Robot:
     def __init__(self,company,name):  
         self.company = company
