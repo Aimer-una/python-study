@@ -8,7 +8,7 @@ class Teacher(Person):
     def action(self):
         print(f"{self.name} is teaching")
 
-def handle_action(person):
+def handle_action(person: Person):
     person.action()
 
 if __name__ == "__main__":
