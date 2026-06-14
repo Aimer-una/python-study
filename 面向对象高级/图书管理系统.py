@@ -114,8 +114,23 @@ class Library_System:
                 else:
                     self.members[member_data["卡号"]] = VipMember(member_data["卡号"], member_data["姓名"], member_data["密码"], member_data["会员等级"])
 
-
+    def login(self):
+        # 判断会员卡号是否存在
+        while True:
+            member_id = input("请输入会员卡号：")
+            if member_id not in self.members:
+                print("登录失败，会员卡号不存在！")
+                continue
+            password = input("请输入密码：")
+            member = self.members[member_id]
+            if member.get_password() != password:
+                print("登录失败，密码错误！")
+                continue
+            print(f"登录成功！欢迎{member.name}！")
+            self.current_member = member
+            return True
 if __name__ == "__main__":
     library_system = Library_System()
     print(library_system.books)
     print(library_system.members)
+    library_system.login()
