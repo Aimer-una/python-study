@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import json
 class Book:
     def __init__(self, book_id, title, author,total_num):
         self.book_id = book_id
@@ -85,3 +86,36 @@ class VipMember(Member):
     def get_max_books(self) -> int:
         return 6 + self.vip_level
 
+
+# 图书管理系统类
+class Library_System:
+    def __init__(self):
+        self.books = {}
+        self.members = {}
+        # 当前登录的会员
+        self.current_member: Member | None = None
+        self.load_books_data()
+        self.load_members_data()
+
+    # 加载图书数据
+    def load_books_data(self):
+        with open("data/books.json", "r", encoding="utf-8") as f:
+            books_data = json.load(f)
+            for book_data in books_data:
+                self.books[book_data["编号"]] = Book(book_data["编号"], book_data["标题"], book_data["作者"], book_data["数量"])
+    
+    # 加载会员数据
+    def load_members_data(self):
+        with open("data/members.json", "r", encoding="utf-8") as f:
+            members_data = json.load(f)
+            for member_data in members_data:
+                if member_data["卡号"].startswith("N"):
+                    self.members[member_data["卡号"]] = NormalMember(member_data["卡号"], member_data["姓名"], member_data["密码"])
+                else:
+                    self.members[member_data["卡号"]] = VipMember(member_data["卡号"], member_data["姓名"], member_data["密码"], member_data["会员等级"])
+
+
+if __name__ == "__main__":
+    library_system = Library_System()
+    print(library_system.books)
+    print(library_system.members)
