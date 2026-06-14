@@ -129,8 +129,63 @@ class Library_System:
             print(f"登录成功！欢迎{member.name}！")
             self.current_member = member
             return True
+
+    def run(self):
+        if self.login():
+            print("欢迎使用图书管理系统！")
+            while True:
+                print("1. 借阅图书")
+                print("2. 归还图书")
+                print("3. 查询借阅的图书")
+                print("4. 退出系统")
+                choice = input("请输入你的选择：")
+                if choice == "1":
+                    self.borrow_book()
+                elif choice == "2":
+                    self.return_book()
+                elif choice == "3":
+                    self.query_borrowed_books()
+                elif choice == "4":
+                    print("退出系统！")
+                    break
+                else:
+                    print("无效的选择！")
+    
+    # 借阅图书
+    def borrow_book(self):
+        # 列出所有图书
+        for book in self.books.values():
+            print(f"编号：{book.book_id}，标题：{book.title}，作者：{book.author}，数量：{book.total_num}，可借阅数量：{book.get_available_num()}")
+
+        book_id = input("请输入图书编号：")
+        if book_id not in self.books:
+            print("借阅失败，图书编号不存在！")
+            return False
+        book = self.books[book_id]
+        if not self.current_member.borrow_book(book):
+            print("借阅失败，你已经借阅了最大数量的图书！")
+            return False
+        print("借阅成功！")
+        return True
+
+    # 归还图书
+    def return_book(self):
+        book_id = input("请输入图书编号：")
+        if book_id not in self.books:
+            print("还书失败，图书编号不存在！")
+            return False
+        book = self.books[book_id]
+        if not self.current_member.return_book(book):
+            print("还书失败，你没有借阅过这本书！")
+            return False
+        print("还书成功！")
+        return True
+
+    # 查询借阅的图书
+    def query_borrowed_books(self):
+        for book in self.current_member.get_borrowed_books():
+            print(f"编号：{book.book_id}，标题：{book.title}，作者：{book.author}，数量：{book.total_num}，可借阅数量：{book.get_available_num()}")
+            
 if __name__ == "__main__":
     library_system = Library_System()
-    print(library_system.books)
-    print(library_system.members)
-    library_system.login()
+    library_system.run()
